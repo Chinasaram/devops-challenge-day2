@@ -14,10 +14,11 @@ This project uses AWS Lambda function to fetch NBA game data from the SportsData
 - Formats game data based on status (Scheduled, InProgress, or Final)
 - Publishes formatted game updates to an AWS SNS topic
 - Logs API responses for debugging
+- Uses AWS EventBridge to schedule and trigger the Lambda function automatically
 
 ## Prerequisites
 
-- An AWS account with permissions to use Lambda and SNS
+- An AWS account with permissions to use use Lambda, SNS, and EventBridge
 - A SportsData.io API key
 - An SNS topic for publishing updates
 
@@ -48,6 +49,16 @@ In the AWS Lambda console, set the following environment variables:
 - Upload your Python script as a Lambda function
 - Ensure the necessary dependencies (`boto3`, `urllib`, `json`, `datetime`, `os`) are available in the execution environment
 
+### 4. Configure AWS EventBridge for Scheduling
+
+- Open the AWS EventBridge console
+- Create a new rule
+- Choose **Schedule** as the rule type
+- Select recurring schedule as schedule type and cron-based schedule as schedule type
+- Set the schedule expression (e.g., `cron(0 12 * * ? *)` for a specific time)
+- Select the target as **AWS Lambda** and choose the deployed Lambda function
+- Enable the rule to trigger the function at the specified schedule
+
 ## API Usage
 
 This function fetches game data from:
@@ -66,6 +77,7 @@ https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{YYYY-MM-DD}?key={NBA_A
    - **Scheduled**: Provides game start time and broadcast channel
 4. Publishes the formatted message to the specified AWS SNS topic
 5. Logs responses and errors for debugging
+6. **Scheduled Execution**: AWS EventBridge is used to trigger the Lambda function at a predefined schedule.
 
 ## Error Handling
 
